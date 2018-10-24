@@ -6,7 +6,7 @@
 // Author: Inovatink
 //
 
-#include "per-clone.h"
+#include "per-client.h"
 
 #include <assert.h>
 #include <string.h>
@@ -35,7 +35,7 @@ static void byte_arr_2_hex_str ( uint8_t *byte_arr, char *hex_str, size_t byte_a
 	}
 }
 
-bool is_value_valid ( uint16_t action_reg )
+static bool is_value_valid ( uint16_t action_reg )
 {
     for (int i = 0; i < sizeof(valid_arr); i++) {
         if (valid_arr[i] == action_reg)
@@ -44,6 +44,12 @@ bool is_value_valid ( uint16_t action_reg )
     }
 
     return false;
+}
+
+//! Byte swap unsigned short
+static uint16_t swap_uint16( uint16_t val ) 
+{
+    return (val << 8) | (val >> 8 );
 }
 
 struct sm_cli_handle {
@@ -96,16 +102,21 @@ sm_cli_err_t sm_cli_add_sensor_packet ( sm_cli_handle_t handle, uint16_t action_
 {
 	if (is_value_valid(action_reg)) {
 		handle->hdr.action_reg |= action_reg;
-		char *action_reg_str = calloc(1, 4);
+		
+		char *action_reg_str = calloc(1, 4 * sizeof(char) + 1);
 		byte_arr_2_hex_str((uint8_t*)&handle->hdr.action_reg, action_reg_str, 2);
 		logf("Updated Action Register: %s\r\n", action_reg_str);
+		free(action_reg_str);
+		action_reg_str = NULL;
 
 		memcpy(&handle->data_buffer[handle->hdr.p_len], &sens_data, 4); 
 		handle->hdr.p_len += 4;
 		logf("Updated Packet Length: %d\r\n", handle->hdr.p_len);
-		char *hex_str = calloc(1, handle->hdr.p_len * 2);
+		char *hex_str = calloc(1, (handle->hdr.p_len) * 2 * sizeof(char) + 1);
 		byte_arr_2_hex_str(handle->data_buffer, hex_str, handle->hdr.p_len);
 		logf("Updated Data Buffer: %s\r\n", hex_str);
+		free(hex_str);
+		hex_str = NULL;
 
 		return SM_CLI_OK;
 	}
@@ -120,6 +131,8 @@ sm_cli_err_t sm_cli_post_packet ( sm_cli_handle_t handle )
 {
 	handle->write_func(handle->uart_ctx, (uint8_t*)&handle->hdr.message_type, 2);
 	handle->write_func(handle->uart_ctx, (uint8_t*)&handle->hdr.p_len, 1);
+	uint16_t swapped_action_reg = swap_uint16(handle->hdr.action_reg);
+	handle->write_func(handle->uart_ctx, (uint8_t*)&swapped_action_reg, 2);
 	handle->write_func(handle->uart_ctx, handle->data_buffer, handle->hdr.p_len);
 	// clearing message header and buffer after successfully sending data to the module.
 	handle->hdr.message_type = 0x0000;

@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../driver/per-clone.h"
+#include "../driver/per-client.h"
 
 #include <errno.h>
 #include <fcntl.h> 
@@ -88,7 +88,7 @@ int main(void)
 		return 0;
 	}
 
-	set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+	set_interface_attribs (fd, B9600, 0);  // set speed to 9600 bps, 8n1 (no parity)
 	set_blocking (fd, 0);                // set no blocking
 
 	//write (fd, "hello!\n", 7);           // send 7 character greeting
@@ -106,20 +106,93 @@ int main(void)
 
 	sm_cli_handle_t sm_client = sm_cli_init( &sm_cfg );
 
+    for(;;) {
 
-	sm_cli_prep_packet(sm_client, 0x53);
+    	sm_cli_prep_packet(sm_client, 0x53);
 
-	uint32_t tmp_data = 0x87654321;
-	tmp_data = swap_uint32(tmp_data);
-	
-	sm_cli_add_sensor_packet(sm_client, AR_SENS1, tmp_data);
+    	uint32_t tmp_data = 0x87654321;
+    	tmp_data = swap_uint32(tmp_data);
+    	
+    	sm_cli_add_sensor_packet(sm_client, AR_SENS1, tmp_data);
 
-	tmp_data = 0x12345678;
-	tmp_data = swap_uint32(tmp_data);
-	
-	sm_cli_add_sensor_packet(sm_client, AR_SENS2, tmp_data);
+    	tmp_data = 0x12345678;
+    	tmp_data = swap_uint32(tmp_data);
+    	
+    	sm_cli_add_sensor_packet(sm_client, AR_SENS2, tmp_data);
 
-	sm_cli_post_packet(sm_client);
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS3, tmp_data);
 
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS4, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS5, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS6, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS7, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS8, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS9, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS10, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS11, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS12, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS13, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS14, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS15, tmp_data);
+
+        tmp_data = 0x12345678;
+        tmp_data = swap_uint32(tmp_data);
+        
+        sm_cli_add_sensor_packet(sm_client, AR_SENS16, tmp_data);
+
+    	sm_cli_post_packet(sm_client);
+        
+        sleep(10);
+    }
 	return 0;
 }
