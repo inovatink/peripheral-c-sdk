@@ -1,6 +1,6 @@
-// Inovatink Smart IoT Module - Peripheral Client C SDK
+// Inovatink Smart IoT Module - Peripheral C SDK
 //
-// This is the Peripheral Client SDK that is created to
+// This is the Peripheral SDK that is created to
 // communicate with Inovatink Smart IoT Modules.
 //
 // Author: Inovatink
@@ -40,22 +40,22 @@
 
 #define DATA_BUFFER_LEN 128//!< Action Register - Sensor 1
 
-typedef struct sm_cli_handle* sm_cli_handle_t;
+typedef struct sm_handle* sm_handle_t;
 
 typedef int (*write_func_ptr)(void *, uint8_t*, int);
 typedef int (*read_func_ptr) (void *, uint8_t*, int);
 
 /**
- * Smart IoT Module Peripheral Client Function Returns
+ * Smart IoT Module Peripheral Function Returns
  */
 typedef enum {
-	SM_CLI_FAIL = -1, /*!< FAIL enum parameter for Smart IoT Module Peripheral Client Error Type */
-	SM_CLI_OK = 0, /*!< OK enum parameter for Smart IoT Module Peripheral Client Error Type */
-} sm_cli_err_t;
+	SM_FAIL = -1, /*!< FAIL enum parameter for Smart IoT Module Peripheral Error Type */
+	SM_OK = 0, /*!< OK enum parameter for Smart IoT Module Peripheral Error Type */
+} sm_err_t;
 
 /**
- * Smart IoT Module Peripheral Client Packet Header structure
- * @brief Data structure that includes packet header of SM Peripheral Client Protocol. 
+ * Smart IoT Module Peripheral Packet Header structure
+ * @brief Data structure that includes packet header of SM Peripheral Protocol. 
  */
 typedef struct {
 	uint16_t message_type; /*!< Packet Header Message Type */
@@ -64,90 +64,90 @@ typedef struct {
 } p_hdr;
 
 /**
- * Smart IoT Module Peripheral Client Configuration Structure
+ * Smart IoT Module Peripheral Configuration Structure
  * @brief Data structure that includes configuration parameters to initialize
- * client such as an uart handle pointer, write & read function pointer
+ * such as an uart handle pointer, write & read function pointer
  * to link host uart driver methods. 
  */
 typedef struct {
 	void *uart_ctx;  /*!< uart context pointer for typical uart handle */
 	write_func_ptr write_func; /*!< write function pointer to point host uart write method */
 	read_func_ptr read_func; /*!< read function pointer to point host uart read method */
-} sm_cli_config_t;
+} sm_config_t;
 
 /**
- * @brief Smart IoT Module Peripheral Client SDK - Initialization
+ * @brief Smart IoT Module Peripheral SDK - Initialization
  *
- *        This method initializes peripheral client with the intended configuration structure,
- *        allocates memory for the handle and sets accordingly. It then returns client handle.
+ *        This method initializes peripheral with the intended configuration structure,
+ *        allocates memory for the handle and sets accordingly. It then returns handle.
  *
- * @param Smart IoT Module peripheral client configuration structure
+ * @param Smart IoT Module peripheral configuration structure
  *
  * @return
- *     - initialized Smart IoT Module peripheral client handle
+ *     - initialized Smart IoT Module peripheral handle
  */
-sm_cli_handle_t sm_cli_init ( sm_cli_config_t *config );
+sm_handle_t sm_init ( sm_config_t *config );
 
 /**
- * @brief Smart IoT Module Peripheral Client SDK - Deleting Client
+ * @brief Smart IoT Module Peripheral SDK - Deleting Client
  *
- *        This method deletes Peripheral client by freeing memory allocated previously both
- *        for handle and data buffer. It then returns SM_CLI_OK.
+ *        This method deletes Peripheral by freeing memory allocated previously both
+ *        for handle and data buffer. It then returns SM_OK.
  *
- * @param handle Smart IoT Module peripheral client handle.
+ * @param handle Smart IoT Module peripheral handle.
  *
  * @return
- *     - SM_CLI_OK If everything occurs as expected.
+ *     - SM_OK If everything occurs as expected.
  */
-sm_cli_err_t sm_cli_delete ( sm_cli_handle_t handle );
+sm_err_t sm_delete ( sm_handle_t handle );
 
 /**
- * @brief Smart IoT Module Peripheral Client SDK - Prepare Protocol Packet
+ * @brief Smart IoT Module Peripheral SDK - Prepare Protocol Packet
  *
- *        This method takes client handle and message type and prepares protocol packet by
- *        changing message type in the packet header. It then returns SM_CLI_OK if a valid
+ *        This method takes handle and message type and prepares protocol packet by
+ *        changing message type in the packet header. It then returns SM_OK if a valid
  *        message type is given as input. If an unevaluated type is passed, it returns
- *        SM_CLI_FAIL.
+ *        SM_FAIL.
  *
- * @param handle Smart IoT Module peripheral client handle.
+ * @param handle Smart IoT Module peripheral handle.
  * @param message_type Peripheral Protocol message type.
  *
  * @return
- *     - SM_CLI_OK If a valid message type is passed.
- *     - SM_CLI_FAIL If an invalid message type is passed.
+ *     - SM_OK If a valid message type is passed.
+ *     - SM_FAIL If an invalid message type is passed.
  */
-sm_cli_err_t sm_cli_prep_packet ( sm_cli_handle_t handle, uint8_t message_type );
+sm_err_t sm_prep_packet ( sm_handle_t handle, uint8_t message_type );
 
 /**
- * @brief Smart IoT Module Peripheral Client SDK - Add Sensor Data to Protocol Packet
+ * @brief Smart IoT Module Peripheral SDK - Add Sensor Data to Protocol Packet
  *
  *        This method takes handle, action register, that indicates the sensor number and
  *        sensor data. Action register value is checked whether it is valid or not and then
  *        OR-ed with the current action register of the protocol packet. Sensor data is concatenated
  *        to the data buffer and protocol packet payload length is updated accordingly. 
  *        IMPORTANT NOTE: Sensor values should be prepared with ascending order of sensor number, S0,
- *        S1, S2 ... After that sm_cli_post_packet should be called to send it to the sm.  
+ *        S1, S2 ... After that sm_post_packet should be called to send it to the sm.  
  *
- * @param handle Smart IoT Module peripheral client handle.
+ * @param handle Smart IoT Module peripheral handle.
  * @param action_reg Peripheral Protocol Action Register of current sensor
  * @param sens_data Data of the sensor with 'action_reg' action register
  * 
  * @return
- *     - SM_CLI_OK If a valid action register is passed.
- *     - SM_CLI_FAIL If an invalid action register is passed.
+ *     - SM_OK If a valid action register is passed.
+ *     - SM_FAIL If an invalid action register is passed.
  */
-sm_cli_err_t sm_cli_add_sensor_packet ( sm_cli_handle_t handle, uint16_t action_reg, uint32_t sens_data );
+sm_err_t sm_add_sensor_packet ( sm_handle_t handle, uint16_t action_reg, uint32_t sens_data );
 
 /**
- * @brief Smart IoT Module Peripheral Client SDK - Post Protocol Packet
+ * @brief Smart IoT Module Peripheral SDK - Post Protocol Packet
  *
  *        This method takes handle and transmits packet header and payload according
- *        to the Smart IoT Module peripheral client protocol. It then resets the packet header
+ *        to the Smart IoT Module peripheral protocol. It then resets the packet header
  *        and payload.
  *
- * @param handle Smart IoT Module peripheral client handle.
+ * @param handle Smart IoT Module peripheral handle.
  * 
  * @return
- *     - SM_CLI_OK If everything occurs as expected.
+ *     - SM_OK If everything occurs as expected.
  */
-sm_cli_err_t sm_cli_post_packet ( sm_cli_handle_t handle );
+sm_err_t sm_post_packet ( sm_handle_t handle );

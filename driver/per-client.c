@@ -1,6 +1,6 @@
-// Inovatink Smart IoT Module - Peripheral Client C SDK
+// Inovatink Smart IoT Module - Peripheral C SDK
 //
-// This is the Peripheral Client SDK that is created to
+// This is the Peripheral SDK that is created to
 // communicate with Inovatink Smart IoT Modules.
 //
 // Author: Inovatink
@@ -52,7 +52,7 @@ static uint16_t swap_uint16( uint16_t val )
     return (val << 8) | (val >> 8 );
 }
 
-struct sm_cli_handle {
+struct sm_handle {
 	p_hdr hdr;
 	uint8_t *data_buffer;
 	void *uart_ctx;
@@ -60,10 +60,10 @@ struct sm_cli_handle {
 	read_func_ptr read_func;
 };
 
-sm_cli_handle_t sm_cli_init ( sm_cli_config_t *config )
+sm_handle_t sm_init ( sm_config_t *config )
 {
 	assert(config != NULL);
-	sm_cli_handle_t handle = calloc(1, sizeof(struct sm_cli_handle));
+	sm_handle_t handle = calloc(1, sizeof(struct sm_handle));
 	handle->data_buffer = calloc(1, DATA_BUFFER_LEN);
 	handle->uart_ctx = config->uart_ctx;
 	handle->write_func = config->write_func;
@@ -72,15 +72,15 @@ sm_cli_handle_t sm_cli_init ( sm_cli_config_t *config )
 	return handle;
 }
 
-sm_cli_err_t sm_cli_delete ( sm_cli_handle_t handle )
+sm_err_t sm_delete ( sm_handle_t handle )
 {
 	free(handle->data_buffer);
 	free(handle);
 
-	return SM_CLI_OK;
+	return SM_OK;
 }
 
-sm_cli_err_t sm_cli_prep_packet ( sm_cli_handle_t handle, uint8_t message_type )
+sm_err_t sm_prep_packet ( sm_handle_t handle, uint8_t message_type )
 {
 	assert(handle != NULL);
 	if (message_type == 0x53) {
@@ -92,13 +92,13 @@ sm_cli_err_t sm_cli_prep_packet ( sm_cli_handle_t handle, uint8_t message_type )
 	else {
 		logf("wrong message type\r\n");
 
-		return SM_CLI_FAIL;
+		return SM_FAIL;
 	}
 
-	return SM_CLI_OK;
+	return SM_OK;
 }
 
-sm_cli_err_t sm_cli_add_sensor_packet ( sm_cli_handle_t handle, uint16_t action_reg, uint32_t sens_data )
+sm_err_t sm_add_sensor_packet ( sm_handle_t handle, uint16_t action_reg, uint32_t sens_data )
 {
 	if (is_value_valid(action_reg)) {
 		handle->hdr.action_reg |= action_reg;
@@ -118,16 +118,16 @@ sm_cli_err_t sm_cli_add_sensor_packet ( sm_cli_handle_t handle, uint16_t action_
 		free(hex_str);
 		hex_str = NULL;
 
-		return SM_CLI_OK;
+		return SM_OK;
 	}
 	else {
 		logf("invalid action register\r\n");
 
-		return SM_CLI_FAIL;
+		return SM_FAIL;
 	}
 }
 
-sm_cli_err_t sm_cli_post_packet ( sm_cli_handle_t handle )
+sm_err_t sm_post_packet ( sm_handle_t handle )
 {
 	handle->write_func(handle->uart_ctx, (uint8_t*)&handle->hdr.message_type, 2);
 	handle->write_func(handle->uart_ctx, (uint8_t*)&handle->hdr.p_len, 1);
@@ -140,5 +140,5 @@ sm_cli_err_t sm_cli_post_packet ( sm_cli_handle_t handle )
 	handle->hdr.action_reg = 0x0000;
 	memset(handle->data_buffer, 0, DATA_BUFFER_LEN);
 
-	return SM_CLI_OK;
+	return SM_OK;
 }
