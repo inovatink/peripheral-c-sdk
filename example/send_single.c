@@ -122,7 +122,7 @@ int main(void)
     tmp_data = 0x12345678;
     tmp_data = swap_uint32(tmp_data);
     
-    // Sencond sensor reading packed to the message.
+    // Second sensor reading packed to the message.
     sm_add_sensor_packet(sm_client, AR_SENS2, tmp_data);
 
     // Message packet is posted to the Smart Module. After sending, sdk cleanups all the information 
