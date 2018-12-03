@@ -1,6 +1,6 @@
 # SM Peripheral SDK
 
-SDK for communication [Inovatink's](www.inovatink.com) wib series Smart IoT Modules.
+SDK for communication [Inovatink's](http://inovatink.com/) wib series Smart IoT Modules.
 
 ## Installation
 
