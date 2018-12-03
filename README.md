@@ -4,7 +4,7 @@ SDK for communication [Inovatink's](www.inovatink.com) wib series Smart IoT Modu
 
 ## Installation
 
-1. [Download](https://github.com/inovatink/peripheral-c-sdk/releases) the Latest release from GitHub.
+1. Downlaod this SDK by clicking Clone or Download.
 2. Unzip and place folder contents into appropriate place inside your C project.
 
 ## Getting Started
