@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../driver/per-client.h"
+#include "../sdk/per-client.h"
 
 #include <errno.h>
 #include <fcntl.h> 
@@ -90,7 +90,7 @@ int main(void)
         return 0;
     }
 
-    set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
+    set_interface_attribs (fd, B38400, 0);  // set speed to 38,400 bps, 8n1 (no parity)
     set_blocking (fd, 0);                    // set no blocking
 
     // Smart Module Peripheral SDK 
@@ -110,7 +110,7 @@ int main(void)
     // sm_prep_packet method.
     sm_prep_packet(sm_client, 0x53);
 
-    uint32_t tmp_data = 0x87654321;
+    uint32_t tmp_data = 0x4048f5c3; // 3.14
     tmp_data = swap_uint32(tmp_data);
     
     // After reading or generating sensor data, it should be passed to the sdk using
@@ -119,7 +119,7 @@ int main(void)
     // First packed sensor index should be larger than the one that used next. 
     sm_add_sensor_packet(sm_client, AR_SENS1, tmp_data);
 
-    tmp_data = 0x12345678;
+    tmp_data = 0x402d70a4; // 2.71
     tmp_data = swap_uint32(tmp_data);
     
     // Second sensor reading packed to the message.
